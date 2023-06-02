@@ -1,0 +1,6 @@
+en:
+  field_gitlab_root_url: GitLab URL
+  field_gitlab_project_url: Project URL
+  label_scm_gitlab_token: Token
+  text_gitlab_root_url_note: e.g. https://gitlab:20443/
+  text_gitlab_repository_note: e.g. https://gitlab:20443/group/project
