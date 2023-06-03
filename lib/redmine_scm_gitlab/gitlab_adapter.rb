@@ -118,8 +118,8 @@ module RedmineScmGitlab
       raise Redmine::Scm::Adapters::CommandFailed.new(e.message)
     end
 
-    def revisions(since)
-      client.commits(nil, nil, 0, since, true).map  do |commit|
+    def revisions(since, limit)
+      client.commits(nil, nil, limit, since, true).map  do |commit|
         sha = commit['id']
         author = commit['author_name']
         time = Time.iso8601(commit['committed_date'])

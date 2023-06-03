@@ -219,7 +219,7 @@ module RedmineScmGitlab
       queries.push("all=true") if all
 
       commit_base = @project_url + "repository/commits/"
-      pagination(commit_base, queries.join('&'), limit)
+      send_limit(commit_base, queries.join('&'), limit)
     end
 
     def diff(ref)
@@ -299,6 +299,19 @@ module RedmineScmGitlab
       response.value # raise if not 2xx
 
       response
+    end
+
+    def send_limit(base_url, query, limit)
+      # if commits (all=true),
+      # commit order is `asc` in page but `desc` between pages.
+      # so pagination is disabled.
+      # not need to order except commits (all=true).
+      query += '&' if query.present?
+      url = base_url + "?#{query}per_page=#{limit}&page=1"
+
+      request = Net::HTTP::Get.new(url)
+      response = send(request)
+      JSON.parse(response.body)
     end
   end
 end

@@ -51,9 +51,30 @@ class Repository::GitLab < Repository
 
   def fetch_changesets
     ex = extra_info || {}
-    ex['latest_committed_date'] = save_revisions(ex['latest_committed_date'])
-    merge_extra_info(ex)
-    save(:validate => false)
+    latest_committed_date = ex['latest_committed_date']
+
+    limit = 100
+    loop do
+      revisions = scm.revisions(latest_committed_date, limit)
+      return if revisions.blank?
+
+      revision_count = revisions.length
+      latest_committed_date = revisions.last.time.utc.strftime("%FT%TZ")
+
+      new_ids = revisions.map {|r| r.scmid}
+      db_scmids = changesets.where(:scmid => new_ids).map {|c| c.scmid}
+      revisions.reject! {|r| db_scmids.include?(r.scmid)}
+
+      revisions.each do |revision|
+        save_revision(revision)
+      end
+
+      ex['latest_committed_date'] = latest_committed_date
+      merge_extra_info(ex)
+      save(:validate => false)
+
+      return if revision_count < limit
+    end
   end
 
   def latest_changesets(path, rev, limit=10)
@@ -64,28 +85,6 @@ class Repository::GitLab < Repository
   end
 
   private
-
-  def save_revisions(since)
-    revisions = scm.revisions(since)
-    return since if revisions.blank?
-
-    limit = 100
-    offset = 0
-    new_ids = revisions.map {|r| r.scmid}
-    latest_revision = revisions.last
-    while offset < new_ids.size
-      scmids = new_ids.slice(offset, limit)
-      db_scmids = changesets.where(:scmid => scmids).map {|c| c.scmid}
-      revisions.reject! {|r| db_scmids.include?(r.scmid)}
-      offset += limit
-    end
-
-    revisions.each do |revision|
-      save_revision(revision)
-    end
-
-    latest_revision.time.utc.strftime("%FT%TZ")
-  end
 
   def save_revision(revision)
     parents = (revision.parents || []).map {|p| find_changeset_by_name(p)}.compact
