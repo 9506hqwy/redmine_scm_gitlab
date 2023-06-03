@@ -219,7 +219,11 @@ module RedmineScmGitlab
       queries.push("all=true") if all
 
       commit_base = @project_url + "repository/commits/"
-      send_limit(commit_base, queries.join('&'), limit)
+      if all
+        pagination_rev(commit_base, queries.join('&'), limit)
+      else
+        pagination(commit_base, queries.join('&'), limit)
+      end
     end
 
     def diff(ref)
@@ -301,17 +305,49 @@ module RedmineScmGitlab
       response
     end
 
-    def send_limit(base_url, query, limit)
+    def pagination_rev(base_url, query, limit)
       # if commits (all=true),
       # commit order is `asc` in page but `desc` between pages.
-      # so pagination is disabled.
-      # not need to order except commits (all=true).
+      # so acquire last page as first.
       query += '&' if query.present?
-      url = base_url + "?#{query}per_page=#{limit}&page=1"
 
-      request = Net::HTTP::Get.new(url)
+      url = base_url + "?#{query}per_page=#{limit}&page=1"
+      request = Net::HTTP::Head.new(url)
       response = send(request)
-      JSON.parse(response.body)
+
+      next_page = response['x-next-page'].to_i
+      total_pages = response['x-total-pages'].to_i
+
+      if total_pages < 1
+        # if entry is over 10,000, total_pages does not exist.
+        while next_page > 0
+          total_pages = next_page
+
+          url = base_url + "?#{query}per_page=#{limit}&page=#{next_page}"
+          request = Net::HTTP::Head.new(url)
+          response = send(request)
+
+          next_page = response['x-next-page'].to_i
+        end
+      end
+
+      # total_pages is missing ???
+      total_pages = 1 if total_pages == 0
+
+      results = []
+
+      (1..total_pages).reverse_each do |page|
+        url = base_url + "?#{query}per_page=#{limit}&page=#{page}"
+        request = Net::HTTP::Get.new(url)
+        response = send(request)
+        results += JSON.parse(response.body)
+
+        if limit < results.length
+          return results[0..limit]
+        end
+      end
+
+      results
     end
   end
 end

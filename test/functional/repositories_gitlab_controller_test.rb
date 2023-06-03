@@ -259,12 +259,15 @@ class RepositoriesGitlabControllerTest < Redmine::ControllerTest
       },
     ]
 
+    stub_request(:head, "http://127.0.0.1/api/v4/projects/project/repository/commits/")
+      .with(query: {all: true, page: 1, per_page: 100})
+
     stub_request(:get, "http://127.0.0.1/api/v4/projects/project/repository/commits/")
       .with(query: {all: true, page: 1, per_page: 100})
       .to_return(body: JSON.dump(res))
 
     stub_request(:get, "http://127.0.0.1/api/v4/projects/project/repository/commits/")
-      .with(query: {ref_name: 'main', page: 1, per_page: 10})
+      .with(query: {ref_name: 'main', page: 1, per_page: 20})
       .to_return(body: JSON.dump(res))
   end
 
