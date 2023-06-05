@@ -11,6 +11,11 @@ module RedmineScmGitlab
       plugin.version.split('.').map(&:to_i)
     end
 
+    def initialize(url, root_url=nil, login=nil, password=nil, path_encoding=nil)
+      super
+      @password = password
+    end
+
     def path_encoding
       'UTF-8'
     end
