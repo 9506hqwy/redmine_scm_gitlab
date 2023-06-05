@@ -30,7 +30,7 @@ This plugin provides a GitLab repository integration.
 
 ## Notes
 
-- Token need to have `read_repository` scope.
+- Token need to have `read_api` and `read_repository` scope.
 
 ## Tested Environment
 
