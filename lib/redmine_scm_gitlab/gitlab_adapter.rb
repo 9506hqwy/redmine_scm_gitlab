@@ -188,10 +188,10 @@ module RedmineScmGitlab
     end
 
     def create_client
-      project = URI.parse(url).normalize
-      root = URI.parse(root_url).normalize
+      project = URI.parse("#{url.chomp('/')}/").normalize
+      root = URI.parse("#{root_url.chomp('/')}/").normalize
       project_path = (project - root).path.chomp('/')
-      RedmineScmGitlab::GitlabClient.new(root_url, project_path, @password, true)
+      RedmineScmGitlab::GitlabClient.new(root.to_s, project_path, @password, true)
     end
   end
 
