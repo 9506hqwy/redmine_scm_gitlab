@@ -45,4 +45,5 @@ This plugin provides a GitLab repository integration.
   * MySQL 5.7
   * PostgreSQL 12
 * GitLab
+  * 13.12
   * 15.11
