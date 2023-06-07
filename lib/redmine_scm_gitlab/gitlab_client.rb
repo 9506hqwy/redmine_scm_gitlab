@@ -17,6 +17,8 @@ module RedmineScmGitlab
     end
 
     def branches
+      return branches_fallback if graphql_fallback?
+
       results = []
 
       offset = 0
@@ -84,6 +86,8 @@ module RedmineScmGitlab
     end
 
     def filesize(path, ref)
+      return files(path, ref)['X-Gitlab-Size'] if graphql_fallback?
+
       query = <<~QUERY
         {
           project(fullPath: "#{@project_path}") {
@@ -100,11 +104,6 @@ module RedmineScmGitlab
 
       json = graphql(query)
       json['data']['project']['repository']['blobs']['nodes'][0]['size'].to_i
-    end
-
-    def tags
-      project_tags_base = @project_url + 'repository/tags/'
-      pagination(project_tags_base, 'order_by=name&sort=asc', 0)
     end
 
     def tree(path, ref)
@@ -184,6 +183,8 @@ module RedmineScmGitlab
     end
 
     def blob(path, ref)
+      return blob_fallback(path, ref) if graphql_fallback?
+
       query = <<~QUERY
         {
           project(fullPath: "#{@project_path}") {
@@ -202,6 +203,21 @@ module RedmineScmGitlab
       json['data']['project']['repository']['blobs']['nodes'][0]
     end
 
+    def version
+      return @version if @version.present?
+
+      query = <<~QUERY
+        {
+          metadata {
+            version,
+          }
+        }
+      QUERY
+
+      json = graphql(query)
+      @version = json['data']['metadata']['version'].split('.').map(&:to_i)
+    end
+
     def blame(path, ref)
       q_path = URI.encode_www_form_component(path)
       q_ref = URI.encode_www_form_component(ref)
@@ -209,6 +225,21 @@ module RedmineScmGitlab
       request = Net::HTTP::Get.new(blame_url)
       response = send(request)
       JSON.parse(response.body)
+    end
+
+    def blob_fallback(path, ref)
+      sha = files(path, ref)['X-Gitlab-Blob-Id']
+      content_url = @project_url + "repository/blobs/#{sha}/raw"
+      request = Net::HTTP::Get.new(content_url)
+      response = send(request)
+      {'rawTextBlob' => response.body}
+    end
+
+    def branches_fallback
+      branches_base = @project_url + 'repository/branches/'
+      pagination(branches_base, nil, 0).map do |branch|
+        branch['name']
+      end
     end
 
     def commits(path, rev, limit, since, all)
@@ -241,7 +272,24 @@ module RedmineScmGitlab
       JSON.parse(response.body)
     end
 
+    def files(path, ref)
+      q_path = URI.encode_www_form_component(path)
+      q_ref = URI.encode_www_form_component(ref)
+      files_url = @project_url + "repository/files/#{q_path}?ref=#{q_ref}"
+      request = Net::HTTP::Head.new(files_url)
+      send(request)
+    end
+
+    def tags
+      project_tags_base = @project_url + 'repository/tags/'
+      pagination(project_tags_base, 'order_by=name&sort=asc', 0)
+    end
+
     private
+
+    def graphql_fallback?
+      (version <=> [13, 12]) < 0
+    end
 
     def graphql(query)
       data = {query: "query #{query.gsub(/\s+/, '')}"}

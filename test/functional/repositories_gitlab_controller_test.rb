@@ -69,6 +69,7 @@ class RepositoriesGitlabControllerTest < Redmine::ControllerTest
 
     repository = new_test_repository
 
+    stub_metadata
     stub_branches
     stub_default_branch
     stub_commits
@@ -102,6 +103,20 @@ class RepositoriesGitlabControllerTest < Redmine::ControllerTest
     repository.identifier = 'test'
     repository.save!
     repository
+  end
+
+  def stub_metadata
+    res = {
+      data: {
+        metadata: {
+          version: "13.12"
+        }
+      }
+    }
+
+    stub_request(:post, "http://127.0.0.1/api/graphql/")
+      .with(body: /metadata/)
+      .to_return(body: JSON.dump(res))
   end
 
   def stub_branches
