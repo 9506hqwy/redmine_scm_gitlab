@@ -30,7 +30,8 @@ This plugin provides a GitLab repository integration.
 
 ## Notes
 
-- Token need to have `read_api` and `read_repository` scope.
+- If GitLab version is  13.8 or earlier, access token need to have `api` scope.
+  If GitLab version is  13.9 or later, access token need to have`read_api` and `read_repository` scope.
 
 ## Tested Environment
 
@@ -45,6 +46,11 @@ This plugin provides a GitLab repository integration.
   * MySQL 5.7
   * PostgreSQL 12
 * GitLab
+  * 13.7
   * 13.11
   * 13.12
   * 15.11
+
+## References
+
+- [GraphQL project token does not have access to project](https://gitlab.com/gitlab-org/gitlab/-/issues/255354)
