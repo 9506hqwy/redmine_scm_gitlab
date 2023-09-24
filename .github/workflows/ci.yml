@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches: [ main ]
-    tags-ignore: [ '*' ]
+    tags-ignore: [ '**' ]
 
 jobs:
   build:
@@ -48,11 +48,16 @@ jobs:
       env:
         REDMINE_HOME: /usr/src/redmine
         RAILS_ENV: test
+        COVERAGE: 1
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+
     - name: Install essential
-      run: apt-get update && apt-get install -y build-essential
+      run: |
+        apt-get update
+        apt-get install -y build-essential
+
     - name: Create database.yml (MySQL)
       if: matrix.db == 'mysql'
       run: |
@@ -66,6 +71,7 @@ jobs:
           database: "redmine"
           encoding: "utf8"
         EOF
+
     - name: Create database.yml (PostgreSQL)
       if: matrix.db == 'postgres'
       run: |
@@ -79,6 +85,7 @@ jobs:
           database: "redmine"
           encoding: "utf8"
         EOF
+
     - name: Create database.yml (SQLite3)
       if: matrix.db == 'sqlite3'
       run: |
@@ -88,6 +95,7 @@ jobs:
           database: "sqlite/redmine.db"
           encoding: "utf8"
         EOF
+
     - name: Setup environments
       run: |
         PLUGIN_DIR=`pwd`
@@ -99,7 +107,39 @@ jobs:
         bundle install --with test
         bundle exec rake db:drop db:create db:migrate redmine:plugins:migrate
         echo ja | bundle exec rake redmine:load_default_data
+
+    - name: Check format
+      if: matrix.version == '4.2'
+      run: |
+        cd ${REDMINE_HOME}
+        FILES=$(find -L "plugins/${PLUGIN_NAME}" -name '*.rb')
+        bundle exec rubocop $FILES
+
     - name: Run tests
       run: |
         cd ${REDMINE_HOME}
-        bundle exec rake redmine:plugins:test NAME=${PLUGIN_NAME}
+
+        if [ "${{ matrix.version }}" = '4.0' ] ; then
+            # "\xC5" from ASCII-8BIT to UTF-8 (Encoding::UndefinedConversionError)
+            # https://www.redmine.org/issues/30963
+            unset COVERAGE
+            mkdir coverage
+        fi
+
+        # skip db:test:prepare
+        bundle exec rake test TEST=plugins/${PLUGIN_NAME}/test/**/*_test.rb
+
+    - name: Generate coverage report
+      if: matrix.db == 'sqlite3'
+      run: |
+        cd ${REDMINE_HOME}
+        mkdir -p ${GITHUB_WORKSPACE}/artifacts
+        tar -C coverage -zcf ${GITHUB_WORKSPACE}/artifacts/coverage.tar.gz .
+
+    - name: Upload Artifact
+      if: matrix.db == 'sqlite3'
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.PLUGIN_NAME }}-${{ matrix.version }}
+        path: artifacts/
+        retention-days: 1
