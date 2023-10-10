@@ -170,11 +170,11 @@ class RepositoriesGitlabControllerTest < Redmine::ControllerTest
     }
 
     stub_request(:post, "http://127.0.0.1/api/graphql/")
-      .with(body: /tree\(path:\\"folder\\"/)
+      .with(body: /tree\(path: \\"folder\\"/)
       .to_return(body: JSON.dump(res))
 
     stub_request(:post, "http://127.0.0.1/api/graphql/")
-      .with(body: /tree\(path:\\"test.txt\\"/)
+      .with(body: /tree\(path: \\"test.txt\\"/)
       .to_return(body: JSON.dump(res))
   end
 

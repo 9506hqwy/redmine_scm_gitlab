@@ -292,7 +292,7 @@ module RedmineScmGitlab
     end
 
     def graphql(query)
-      data = {query: "query #{query.gsub(/\s+/, '')}"}
+      data = {query: "query #{query}"}
       request = Net::HTTP::Post.new(@graph_url)
       request['Content-Type'] = 'application/json'
       request.body = JSON.dump(data)
