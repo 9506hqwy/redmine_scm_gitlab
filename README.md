@@ -50,6 +50,7 @@ This plugin provides a GitLab repository integration.
   * 13.11
   * 13.12
   * 15.11
+  * 16.4
 
 ## References
 
