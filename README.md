@@ -41,6 +41,7 @@ This plugin provides a GitLab repository integration.
   * 4.1
   * 4.2
   * 5.0
+  * 5.1
 * Database
   * SQLite
   * MySQL 5.7
