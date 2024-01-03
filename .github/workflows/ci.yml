@@ -138,7 +138,7 @@ jobs:
 
     - name: Upload Artifact
       if: matrix.db == 'sqlite3'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ env.PLUGIN_NAME }}-${{ matrix.version }}
         path: artifacts/
