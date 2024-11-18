@@ -1,0 +1,31 @@
+{
+    // Dev Container's Name.
+    "name": "Redmine",
+    // Base Container Image.
+    "build": {
+        "dockerfile": "./Dockerfile",
+        "context": "."
+    },
+    // For running using Podman.
+    // https://github.com/microsoft/vscode-remote-release/issues/4443
+    "runArgs": [
+        "--userns=keep-id"
+    ],
+    "securityOpt": [
+        "label=disable",
+        "seccomp=unconfined"
+    ],
+    // Install plugin.
+    "postCreateCommand": "${containerWorkspaceFolder}/.devcontainer/post-create.sh",
+    // Uncomment to connect as root instead.
+    //"remoteUser": "root",
+    // Set environment variables in container.
+    "containerEnv": {
+        "PLUGIN_NAME": "${localWorkspaceFolderBasename}"
+    },
+    // Use default container `USER`,
+    // because of avoid reject directory creating by container startup user.
+    "containerUser": "vscode",
+    // Expose redmine port.
+    "forwardPorts": [3000]
+}

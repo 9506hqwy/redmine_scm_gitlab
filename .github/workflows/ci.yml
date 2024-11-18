@@ -13,15 +13,41 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        db: [mysql, postgres, sqlite3]
-        version: ['3.4', '4.0', '4.1', '4.2', '5.0', '5.1']
+        db: [mysql57, mysql80, postgres, sqlite3]
+        version: ['3.4', '4.0', '4.1', '4.2', '5.0', '5.1', '6.0']
         exclude:
+          - db: mysql57
+            version: "5.1"
+          - db: mysql57
+            version: "6.0"
+          - db: mysql80
+            version: "3.4"
+          - db: mysql80
+            version: "4.0"
+          - db: mysql80
+            version: "4.1"
+          - db: mysql80
+            version: "4.2"
+          - db: mysql80
+            version: "5.0"
           - db: postgres
             version: "3.4"
 
     services:
-      mysql:
+      mysql57:
         image: mysql:5.7
+        env:
+          MYSQL_USER: redmine
+          MYSQL_PASSWORD: password
+          MYSQL_DATABASE: redmine
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -u root"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      mysql80:
+        image: mysql:8.0
         env:
           MYSQL_USER: redmine
           MYSQL_PASSWORD: password
@@ -58,18 +84,35 @@ jobs:
         apt-get update
         apt-get install -y build-essential
 
-    - name: Create database.yml (MySQL)
-      if: matrix.db == 'mysql'
+    - name: Create database.yml (MySQL 5.7)
+      if: matrix.db == 'mysql57'
       run: |
         cat > ${REDMINE_HOME}/config/database.yml <<EOF
         test:
           adapter: "mysql2"
-          host: "mysql"
+          host: "mysql57"
           port: 3306
           username: "redmine"
           password: "password"
           database: "redmine"
           encoding: "utf8"
+        EOF
+
+    - name: Create database.yml (MySQL 8.0)
+      if: matrix.db == 'mysql80'
+      run: |
+        cat > ${REDMINE_HOME}/config/database.yml <<EOF
+        test:
+          adapter: "mysql2"
+          host: "mysql80"
+          port: 3306
+          username: "redmine"
+          password: "password"
+          database: "redmine"
+          encoding: "utf8mb4"
+          variables:
+            # https://www.redmine.org/issues/39437
+            transaction_isolation: "READ-COMMITTED"
         EOF
 
     - name: Create database.yml (PostgreSQL)
@@ -119,11 +162,12 @@ jobs:
       run: |
         cd ${REDMINE_HOME}
 
+        mkdir -p coverage
+
         if [ "${{ matrix.version }}" = '4.0' ] ; then
             # "\xC5" from ASCII-8BIT to UTF-8 (Encoding::UndefinedConversionError)
             # https://www.redmine.org/issues/30963
             unset COVERAGE
-            mkdir coverage
         fi
 
         # skip db:test:prepare
