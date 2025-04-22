@@ -15,6 +15,10 @@
         "label=disable",
         "seccomp=unconfined"
     ],
+    // Add features.
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {}
+    },
     // Install plugin.
     "postCreateCommand": "${containerWorkspaceFolder}/.devcontainer/post-create.sh",
     // Uncomment to connect as root instead.
@@ -27,5 +31,6 @@
     // because of avoid reject directory creating by container startup user.
     "containerUser": "vscode",
     // Expose redmine port.
-    "forwardPorts": [3000]
+    "appPort": [3000, 9323],
+    "forwardPorts": [3000, 9323]
 }

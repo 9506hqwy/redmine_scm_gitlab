@@ -13,3 +13,10 @@ do
 
     popd
 done
+
+popd
+
+# Install playwright
+npm install
+npx playwright install-deps
+npx playwright install

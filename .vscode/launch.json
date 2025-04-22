@@ -6,10 +6,11 @@
             "type": "rdbg",
             "request": "launch",
             "cwd": "/usr/src/redmine/5.0",
-            "command": "rails",
+            "command": "bin/rails",
             "script": "server",
             "args": [
                 "-e", "$RAILS_ENV",
+                "-b", "0.0.0.0",
                 "-p", "3000"
             ],
             "useBundler": true
@@ -19,10 +20,11 @@
             "type": "rdbg",
             "request": "launch",
             "cwd": "/usr/src/redmine/5.1",
-            "command": "rails",
+            "command": "bin/rails",
             "script": "server",
             "args": [
                 "-e", "$RAILS_ENV",
+                "-b", "0.0.0.0",
                 "-p", "3000"
             ],
             "useBundler": true
@@ -32,10 +34,11 @@
             "type": "rdbg",
             "request": "launch",
             "cwd": "/usr/src/redmine/6.0",
-            "command": "rails",
+            "command": "bin/rails",
             "script": "server",
             "args": [
                 "-e", "$RAILS_ENV",
+                "-b", "0.0.0.0",
                 "-p", "3000"
             ],
             "useBundler": true

@@ -67,3 +67,13 @@ yarn-debug.log*
 /storage/*
 !/storage/.keep
 /public/uploads
+
+# Ignore NPM
+package-lock.json
+
+# Ignore Playwright
+playwright-report/
+test-results/
+
+# Ignore artifacts
+artifacts/
