@@ -29,6 +29,7 @@ module RedmineScmGitlab
 
     def entries(path=nil, identifier=nil, options={})
       ref = identifier || default_branch
+      return [] unless ref
 
       client.tree(path, ref).map do |object|
         name = object['name']
@@ -60,7 +61,7 @@ module RedmineScmGitlab
 
     def default_branch
       @default_branch_name ||= client.default_branch
-      Redmine::Scm::Adapters::Branch.new(@default_branch_name)
+      Redmine::Scm::Adapters::Branch.new(@default_branch_name) if @default_branch_name
     rescue SystemCallError
       Redmine::Scm::Adapters::Branch.new('main')
     end
@@ -174,6 +175,8 @@ module RedmineScmGitlab
     end
 
     def path_to_revision(path, ref)
+      return nil unless ref
+
       # TODO: time is not `committed_date`.
       commit = client.last_commit(path, ref)
       author = commit['authorName']
