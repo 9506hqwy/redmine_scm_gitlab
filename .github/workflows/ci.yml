@@ -4,186 +4,20 @@ on:
   push:
     branches: [ main ]
     tags-ignore: [ '**' ]
+  pull_request:
+
+permissions:
+  contents: read
 
 jobs:
-  build:
+  mysql57:
+    uses: 9506hqwy/actions/.github/workflows/redmine-ci-mysql57.yml@main
 
-    runs-on: ubuntu-latest
+  mysql80:
+    uses: 9506hqwy/actions/.github/workflows/redmine-ci-mysql80.yml@main
 
-    strategy:
-      fail-fast: false
-      matrix:
-        db: [mysql57, mysql80, postgres, sqlite3]
-        version: ['3.4', '4.0', '4.1', '4.2', '5.0', '5.1', '6.0']
-        exclude:
-          - db: mysql57
-            version: "5.1"
-          - db: mysql57
-            version: "6.0"
-          - db: mysql80
-            version: "3.4"
-          - db: mysql80
-            version: "4.0"
-          - db: mysql80
-            version: "4.1"
-          - db: mysql80
-            version: "4.2"
-          - db: mysql80
-            version: "5.0"
-          - db: postgres
-            version: "3.4"
+  postgres:
+    uses: 9506hqwy/actions/.github/workflows/redmine-ci-postgres.yml@main
 
-    services:
-      mysql57:
-        image: mysql:5.7
-        env:
-          MYSQL_USER: redmine
-          MYSQL_PASSWORD: password
-          MYSQL_DATABASE: redmine
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-        options: >-
-          --health-cmd "mysqladmin ping -h 127.0.0.1 -u root"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      mysql80:
-        image: mysql:8.0
-        env:
-          MYSQL_USER: redmine
-          MYSQL_PASSWORD: password
-          MYSQL_DATABASE: redmine
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-        options: >-
-          --health-cmd "mysqladmin ping -h 127.0.0.1 -u root"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      postgres:
-        image: postgres:12-alpine
-        env:
-          POSTGRES_USER: redmine
-          POSTGRES_PASSWORD: password
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    container:
-      image: redmine:${{ matrix.version }}
-      env:
-        REDMINE_HOME: /usr/src/redmine
-        RAILS_ENV: test
-        COVERAGE: 1
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Install essential
-      run: |
-        apt-get update
-        apt-get install -y build-essential
-
-    - name: Create database.yml (MySQL 5.7)
-      if: matrix.db == 'mysql57'
-      run: |
-        cat > ${REDMINE_HOME}/config/database.yml <<EOF
-        test:
-          adapter: "mysql2"
-          host: "mysql57"
-          port: 3306
-          username: "redmine"
-          password: "password"
-          database: "redmine"
-          encoding: "utf8"
-        EOF
-
-    - name: Create database.yml (MySQL 8.0)
-      if: matrix.db == 'mysql80'
-      run: |
-        cat > ${REDMINE_HOME}/config/database.yml <<EOF
-        test:
-          adapter: "mysql2"
-          host: "mysql80"
-          port: 3306
-          username: "redmine"
-          password: "password"
-          database: "redmine"
-          encoding: "utf8mb4"
-          variables:
-            # https://www.redmine.org/issues/39437
-            transaction_isolation: "READ-COMMITTED"
-        EOF
-
-    - name: Create database.yml (PostgreSQL)
-      if: matrix.db == 'postgres'
-      run: |
-        cat > ${REDMINE_HOME}/config/database.yml <<EOF
-        test:
-          adapter: "postgresql"
-          host: "postgres"
-          port: 5432
-          username: "redmine"
-          password: "password"
-          database: "redmine"
-          encoding: "utf8"
-        EOF
-
-    - name: Create database.yml (SQLite3)
-      if: matrix.db == 'sqlite3'
-      run: |
-        cat > ${REDMINE_HOME}/config/database.yml <<EOF
-        test:
-          adapter: "sqlite3"
-          database: "sqlite/redmine.db"
-          encoding: "utf8"
-        EOF
-
-    - name: Setup environments
-      run: |
-        PLUGIN_DIR=`pwd`
-        PLUGIN_NAME=`basename ${PLUGIN_DIR}`
-        echo "PLUGIN_NAME=${PLUGIN_NAME}" >> $GITHUB_ENV
-        cd ${REDMINE_HOME}/plugins
-        ln -s ${PLUGIN_DIR} ${PLUGIN_NAME}
-        cd ..
-        bundle install --with test
-        bundle exec rake db:drop db:create db:migrate redmine:plugins:migrate
-        echo ja | bundle exec rake redmine:load_default_data
-
-    - name: Check format
-      if: matrix.version == '4.2'
-      run: |
-        cd ${REDMINE_HOME}
-        FILES=$(find -L "plugins/${PLUGIN_NAME}" -name '*.rb')
-        bundle exec rubocop $FILES
-
-    - name: Run tests
-      run: |
-        cd ${REDMINE_HOME}
-
-        mkdir -p coverage
-
-        if [ "${{ matrix.version }}" = '4.0' ] ; then
-            # "\xC5" from ASCII-8BIT to UTF-8 (Encoding::UndefinedConversionError)
-            # https://www.redmine.org/issues/30963
-            unset COVERAGE
-        fi
-
-        # skip db:test:prepare
-        bundle exec rake test TEST=plugins/${PLUGIN_NAME}/test/**/*_test.rb
-
-    - name: Generate coverage report
-      if: matrix.db == 'sqlite3'
-      run: |
-        cd ${REDMINE_HOME}
-        mkdir -p ${GITHUB_WORKSPACE}/artifacts
-        tar -C coverage -zcf ${GITHUB_WORKSPACE}/artifacts/coverage.tar.gz .
-
-    - name: Upload Artifact
-      if: matrix.db == 'sqlite3'
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ env.PLUGIN_NAME }}-${{ matrix.version }}
-        path: artifacts/
-        retention-days: 1
+  sqlite3:
+    uses: 9506hqwy/actions/.github/workflows/redmine-ci-sqlite3.yml@main

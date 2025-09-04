@@ -1,7 +1,12 @@
 {
     "recommendations": [
+        "biomejs.biome",
+        "davidanson.vscode-markdownlint",
         "editorconfig.editorconfig",
+        "github.vscode-github-actions",
         "koichisasada.vscode-rdbg",
-        "shopify.ruby-lsp"
+        "shopify.ruby-lsp",
+        "timonwong.shellcheck",
+        "yzhang.markdown-all-in-one"
     ]
 }

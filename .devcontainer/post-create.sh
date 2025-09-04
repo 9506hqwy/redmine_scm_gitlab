@@ -1,15 +1,16 @@
 #!/bin/bash
 set -euo pipefail
 
-PLUGIN_DIR=$(pwd)
+# Setup redmine plugin
+PLUGIN_DIR="$(pwd)"
 
-pushd ${REDMINE_HOME}
+pushd "${REDMINE_HOME}"
 
-for BASE in $(ls)
+for BASE in ./*
 do
-    pushd ${BASE}
+    pushd "${BASE}"
 
-    ln -s ${PLUGIN_DIR} plugins/${PLUGIN_NAME}
+    ln -s "${PLUGIN_DIR}" "plugins/${PLUGIN_NAME}"
 
     popd
 done

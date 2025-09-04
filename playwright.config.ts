@@ -3,18 +3,36 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './test/e2e',
   fullyParallel: false,
-  reporter: 'html',
+  reporter: [
+    ['html', {outputFolder: "artifacts/playwright/"}],
+  ],
   projects: [
     {
-      name: 'chromium',
+      name: 'initialize',
+      testMatch: [
+        'initialize.spec.ts'
+      ],
       use: { ...devices['Desktop Chrome'] },
     },
     {
-      name: 'firefox',
+      name: 'chromium test',
+      testIgnore: [
+        'initialize.spec.ts'
+      ],
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox test',
+      testIgnore: [
+        'initialize.spec.ts'
+      ],
       use: { ...devices['Desktop Firefox'] },
     },
     {
-      name: 'webkit',
+      name: 'webkit test',
+      testIgnore: [
+        'initialize.spec.ts'
+      ],
       use: { ...devices['Desktop Safari'] },
     },
   ],

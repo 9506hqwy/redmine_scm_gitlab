@@ -9,9 +9,12 @@
             "command": "bin/rails",
             "script": "server",
             "args": [
-                "-e", "$RAILS_ENV",
-                "-b", "0.0.0.0",
-                "-p", "3000"
+                "-e",
+                "$RAILS_ENV",
+                "-b",
+                "0.0.0.0",
+                "-p",
+                "3000"
             ],
             "useBundler": true
         },
@@ -23,9 +26,12 @@
             "command": "bin/rails",
             "script": "server",
             "args": [
-                "-e", "$RAILS_ENV",
-                "-b", "0.0.0.0",
-                "-p", "3000"
+                "-e",
+                "$RAILS_ENV",
+                "-b",
+                "0.0.0.0",
+                "-p",
+                "3000"
             ],
             "useBundler": true
         },
@@ -37,9 +43,12 @@
             "command": "bin/rails",
             "script": "server",
             "args": [
-                "-e", "$RAILS_ENV",
-                "-b", "0.0.0.0",
-                "-p", "3000"
+                "-e",
+                "$RAILS_ENV",
+                "-b",
+                "0.0.0.0",
+                "-p",
+                "3000"
             ],
             "useBundler": true
         }

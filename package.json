@@ -1,7 +1,13 @@
 {
-  "name": "template_redmine_plugin",
-  "devDependencies": {
-    "@playwright/test": "^1.51.1",
-    "@types/node": "^22.13.10"
-  }
+    "name": "redmine_scm_gitlab",
+    "scripts": {
+        "check": "biome check --write",
+        "format": "biome format --write",
+        "lint": "biome lint --write"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "2.2.2",
+        "@playwright/test": "^1.53.0",
+        "@types/node": "^24.0.1"
+    }
 }

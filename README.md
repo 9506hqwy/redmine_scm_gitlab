@@ -9,13 +9,17 @@ This plugin provides a GitLab repository integration.
 ## Installation
 
 1. Download plugin in Redmine plugin directory.
+
    ```sh
    git clone https://github.com/9506hqwy/redmine_scm_gitlab.git
    ```
+
 2. Install dependency libraries in Redmine directory.
+
    ```sh
    bundle install --without development test
    ```
+
 3. Start Redmine
 
 ## Configuration
@@ -35,24 +39,23 @@ This plugin provides a GitLab repository integration.
 
 ## Tested Environment
 
-* Redmine (Docker Image)
-  * 3.4
-  * 4.0
-  * 4.1
-  * 4.2
-  * 5.0
-  * 5.1
-  * 6.0
-* Database
-  * SQLite
-  * MySQL 5.7 or 8.0
-  * PostgreSQL 12
-* GitLab
-  * 13.7
-  * 13.11
-  * 13.12
-  * 15.11
-  * 16.4
+- Redmine (Docker Image)
+  - 4.0
+  - 4.1
+  - 4.2
+  - 5.0
+  - 5.1
+  - 6.0
+- Database
+  - SQLite
+  - MySQL 5.7 or 8.0
+  - PostgreSQL 14
+- GitLab
+  - 13.7
+  - 13.11
+  - 13.12
+  - 15.11
+  - 16.4
 
 ## References
 

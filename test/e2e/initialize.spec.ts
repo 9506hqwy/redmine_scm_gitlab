@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("login test", async ({ page, browserName }) => {
+test("initialize", async ({ page, browserName }) => {
   await page.goto("http://localhost:3000/");
   await expect(page.locator("a.login")).toBeVisible();
 
@@ -8,12 +8,16 @@ test("login test", async ({ page, browserName }) => {
   await expect(page.locator("input#login-submit")).toBeVisible();
 
   await page.locator("input#username").fill("admin");
-  await page.locator("input#password").fill("redmineadmin");
+  await page.locator("input#password").fill("admin");
   await page.locator("input#login-submit").click();
-  await expect(page.locator("a.logout")).toBeVisible();
+
+  await page.locator("input#password").fill("admin");
+  await page.locator("input#new_password").fill("redmineadmin");
+  await page.locator("input#new_password_confirmation").fill("redmineadmin");
+  await page.locator('input[name="commit"]').click();
 
   await page.screenshot({
-    path: `artifacts/e2e/login_${browserName}.png`,
+    path: `artifacts/e2e/initialize_${browserName}.png`,
     fullPage: true,
   });
 });

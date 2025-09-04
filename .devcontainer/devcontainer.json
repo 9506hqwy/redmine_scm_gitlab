@@ -2,10 +2,7 @@
     // Dev Container's Name.
     "name": "Redmine",
     // Base Container Image.
-    "build": {
-        "dockerfile": "./Dockerfile",
-        "context": "."
-    },
+    "image": "mcr.microsoft.com/devcontainers/ruby:3.1-bookworm",
     // For running using Podman.
     // https://github.com/microsoft/vscode-remote-release/issues/4443
     "runArgs": [
@@ -15,18 +12,22 @@
         "label=disable",
         "seccomp=unconfined"
     ],
+    // Set container's environment variables.
+    "containerEnv": {
+        "PLUGIN_NAME": "${localWorkspaceFolderBasename}",
+        "RAILS_ENV": "development",
+        "REDMINE_HOME": "/usr/src/redmine"
+    },
     // Add features.
     "features": {
         "ghcr.io/devcontainers/features/node:1": {}
     },
+    // Use 'onCreateCommand' to run commands after the container is created.
+    "onCreateCommand": "/bin/bash ${containerWorkspaceFolder}/.devcontainer/on-create.sh",
     // Install plugin.
-    "postCreateCommand": "${containerWorkspaceFolder}/.devcontainer/post-create.sh",
+    "postCreateCommand": "/bin/bash ${containerWorkspaceFolder}/.devcontainer/post-create.sh",
     // Uncomment to connect as root instead.
     //"remoteUser": "root",
-    // Set environment variables in container.
-    "containerEnv": {
-        "PLUGIN_NAME": "${localWorkspaceFolderBasename}"
-    },
     // Use default container `USER`,
     // because of avoid reject directory creating by container startup user.
     "containerUser": "vscode",
