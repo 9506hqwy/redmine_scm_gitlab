@@ -53,9 +53,9 @@ sudo chmod 755 "${REDMINE_HOME}"
 
 pushd "${REDMINE_HOME}"
 
-git clone --depth 1 -b 5.0-stable "${REDMINE_URL}" 5.0
 git clone --depth 1 -b 5.1-stable "${REDMINE_URL}" 5.1
 git clone --depth 1 -b 6.0-stable "${REDMINE_URL}" 6.0
+git clone --depth 1 -b 6.1-stable "${REDMINE_URL}" 6.1
 
 for BASE in ./*
 do

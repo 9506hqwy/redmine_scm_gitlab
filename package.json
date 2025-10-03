@@ -6,7 +6,7 @@
         "lint": "biome lint --write"
     },
     "devDependencies": {
-        "@biomejs/biome": "2.2.2",
+        "@biomejs/biome": "2.2.4",
         "@playwright/test": "^1.53.0",
         "@types/node": "^24.0.1"
     }

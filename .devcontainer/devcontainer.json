@@ -2,7 +2,7 @@
     // Dev Container's Name.
     "name": "Redmine",
     // Base Container Image.
-    "image": "mcr.microsoft.com/devcontainers/ruby:3.1-bookworm",
+    "image": "mcr.microsoft.com/devcontainers/ruby:3.2-bookworm",
     // For running using Podman.
     // https://github.com/microsoft/vscode-remote-release/issues/4443
     "runArgs": [
@@ -32,6 +32,12 @@
     // because of avoid reject directory creating by container startup user.
     "containerUser": "vscode",
     // Expose redmine port.
-    "appPort": [3000, 9323],
-    "forwardPorts": [3000, 9323]
+    "appPort": [
+        3000,
+        9323
+    ],
+    "forwardPorts": [
+        3000,
+        9323
+    ]
 }

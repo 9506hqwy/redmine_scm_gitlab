@@ -2,23 +2,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Redmine 5.0",
-            "type": "rdbg",
-            "request": "launch",
-            "cwd": "/usr/src/redmine/5.0",
-            "command": "bin/rails",
-            "script": "server",
-            "args": [
-                "-e",
-                "$RAILS_ENV",
-                "-b",
-                "0.0.0.0",
-                "-p",
-                "3000"
-            ],
-            "useBundler": true
-        },
-        {
             "name": "Redmine 5.1",
             "type": "rdbg",
             "request": "launch",
@@ -40,6 +23,23 @@
             "type": "rdbg",
             "request": "launch",
             "cwd": "/usr/src/redmine/6.0",
+            "command": "bin/rails",
+            "script": "server",
+            "args": [
+                "-e",
+                "$RAILS_ENV",
+                "-b",
+                "0.0.0.0",
+                "-p",
+                "3000"
+            ],
+            "useBundler": true
+        },
+        {
+            "name": "Redmine 6.1",
+            "type": "rdbg",
+            "request": "launch",
+            "cwd": "/usr/src/redmine/6.1",
             "command": "bin/rails",
             "script": "server",
             "args": [
