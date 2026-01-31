@@ -11,10 +11,13 @@ updates:
     ignore:
       - dependency-name: "@biomejs/*"
         update-types:
+          - "version-update:semver-minor"
           - "version-update:semver-patch"
       - dependency-name: "@playwright/*"
         update-types:
+          - "version-update:semver-minor"
           - "version-update:semver-patch"
       - dependency-name: "@types/*"
         update-types:
+          - "version-update:semver-minor"
           - "version-update:semver-patch"
