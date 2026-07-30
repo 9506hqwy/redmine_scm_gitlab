@@ -16,7 +16,7 @@ Redmine::Plugin.register :redmine_scm_gitlab do
   name 'Redmine Scm Gitlab plugin'
   author '9506hqwy'
   description 'This is a gitlab plugin for Redmine'
-  version '0.1.0'
+  version '0.2.0'
   url 'https://github.com/9506hqwy/redmine_scm_gitlab'
   author_url 'https://github.com/9506hqwy'
 
