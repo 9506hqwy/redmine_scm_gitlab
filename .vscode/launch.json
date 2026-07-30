@@ -5,6 +5,7 @@
             "name": "Redmine 5.1",
             "type": "rdbg",
             "request": "launch",
+            "rdbgPath": "bundle exec rdbg",
             "cwd": "/usr/src/redmine/5.1",
             "command": "bin/rails",
             "script": "server",
@@ -22,6 +23,7 @@
             "name": "Redmine 6.0",
             "type": "rdbg",
             "request": "launch",
+            "rdbgPath": "bundle exec rdbg",
             "cwd": "/usr/src/redmine/6.0",
             "command": "bin/rails",
             "script": "server",
@@ -39,7 +41,26 @@
             "name": "Redmine 6.1",
             "type": "rdbg",
             "request": "launch",
+            "rdbgPath": "bundle exec rdbg",
             "cwd": "/usr/src/redmine/6.1",
+            "command": "bin/rails",
+            "script": "server",
+            "args": [
+                "-e",
+                "$RAILS_ENV",
+                "-b",
+                "0.0.0.0",
+                "-p",
+                "3000"
+            ],
+            "useBundler": true
+        },
+        {
+            "name": "Redmine 7.0",
+            "type": "rdbg",
+            "request": "launch",
+            "rdbgPath": "bundle exec rdbg",
+            "cwd": "/usr/src/redmine/7.0",
             "command": "bin/rails",
             "script": "server",
             "args": [

@@ -10,6 +10,7 @@ test("initialize", async ({ page, browserName }) => {
   await page.locator("input#username").fill("admin");
   await page.locator("input#password").fill("admin");
   await page.locator("input#login-submit").click();
+  await expect(page.locator("div#flash_error")).toBeVisible();
 
   await page.locator("input#password").fill("admin");
   await page.locator("input#new_password").fill("redmineadmin");

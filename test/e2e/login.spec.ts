@@ -10,7 +10,7 @@ test("login test", async ({ page, browserName }) => {
   await page.locator("input#username").fill("admin");
   await page.locator("input#password").fill("redmineadmin");
   await page.locator("input#login-submit").click();
-  await expect(page.locator("a.logout")).toBeVisible();
+  await expect(page.locator("a.administration")).toBeVisible();
 
   await page.screenshot({
     path: `artifacts/e2e/login_${browserName}.png`,

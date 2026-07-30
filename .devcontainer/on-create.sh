@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Install dependencies
 sudo apt-get update -y
-sudo apt-get install -y imagemagick nodejs npm shellcheck zstd
+sudo apt-get install -y imagemagick nodejs npm pandoc shellcheck
 
 # Configuration PATH
 mkdir -p ~/.local/bin
@@ -36,10 +36,10 @@ curl -fsSL -o - "https://github.com/dandavison/delta/releases/download/${DELTA_V
 chmod +x ~/.local/bin/delta
 
 # Install edit
-#EDIT_URL="https://api.github.com/repos/microsoft/edit/releases?per_page=1"
-EDIT_VERSION="v1.2.0"
-curl -fsSL -o - "https://github.com/microsoft/edit/releases/download/${EDIT_VERSION}/edit-${EDIT_VERSION#v}-x86_64-linux-gnu.tar.zst" | \
-    tar --zstd -xf - -O "edit" > ~/.local/bin/edit
+EDIT_URL="https://api.github.com/repos/microsoft/edit/releases?per_page=1"
+EDIT_VERSION=$(curl -fsSL -H "${GITHUB_HEADER_ACCEPT}" -H "${GITHUB_HEADER_VERSION}" "${EDIT_URL}" | jq -r '.[0].tag_name')
+curl -fsSL -o - "https://github.com/microsoft/edit/releases/download/${EDIT_VERSION}/edit-${EDIT_VERSION#v}-x86_64-linux-gnu.tar.gz" | \
+    tar -zxf - -O "edit" > ~/.local/bin/edit
 chmod +x ~/.local/bin/edit
 
 # Install lefthook
@@ -68,6 +68,12 @@ pushd "${REDMINE_HOME}"
 git clone --depth 1 -b 5.1-stable "${REDMINE_URL}" 5.1
 git clone --depth 1 -b 6.0-stable "${REDMINE_URL}" 6.0
 git clone --depth 1 -b 6.1-stable "${REDMINE_URL}" 6.1
+git clone --depth 1 -b 7.0-stable "${REDMINE_URL}" 7.0
+
+bundle config unset without
+bundle config unset --local without
+bundle config set --local with "development test"
+bundle config set --local path "vendor/bundle"
 
 for BASE in ./*
 do
@@ -89,7 +95,7 @@ EOF
 
     echo "gem 'debug'" > Gemfile.local
 
-    bundle install --with development test
+    bundle install
     bundle exec rake generate_secret_token
     bundle exec rake db:migrate
     echo ja | bundle exec rake redmine:load_default_data
